@@ -1,6 +1,5 @@
-TodoMVC for Riot JS
-=======
 # Riot.js TodoMVC example
+[![Code Climate](https://codeclimate.com/github/3den/riotjs-todomvc.png)](https://codeclimate.com/github/3den/riotjs-todomvc)
 
 > Riot is a 1kb client-side MVP library. A fast, powerful yet tiny tool for building large scale web applications.
 
