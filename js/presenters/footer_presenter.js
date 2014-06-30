@@ -3,23 +3,20 @@
 function footerPresenter(element, options) {
     var todo = options.model,
         template = options.template,
-        filter = "#/";
-
-    // Bind user events
-    element.on('click', '#filters a', function(e){
-        var $target = $(e.target);
-        e.preventDefault();
-        filter = $target.attr("href");
-        $.route(filter);
-    });
+        filterState = null;
 
     // Bind model events
+    todo.on('load', load);
     todo.on('add remove toggle load', counts);
 
+    function load(filter) {
+        filterState = filter;
+    }
+
     function counts() {
-        var data = getData(), hash = location.hash;
+        var data = getData();
         element.html($.render(template, data));
-        $('a[href="'+ filter +'"]', element).addClass('selected');
+        $('a[href="#/'+ filterState +'"]', element).addClass('selected');
         toggle(data);
     }
 

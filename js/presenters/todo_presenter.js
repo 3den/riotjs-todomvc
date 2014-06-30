@@ -5,6 +5,7 @@ function todoPresenter(element, options) {
     var template = options.template,
         todo = options.model,
         $list = element.find('#todo-list'),
+        filterState = null,
         ENTER_KEY = 13,
         ESC_KEY = 27;
 
@@ -53,31 +54,27 @@ function todoPresenter(element, options) {
     });
 
     /* Listen to model events */
+    todo.on('toggle', toggle);
+    todo.on('edit', edit);
 
     // Reload the list
-    todo.on('load', function(filter) {
-        var items = todo.items(filter);
-        $('#main', element).toggle(items.length > 0);
-        $list.empty() && items.forEach(add);
-
-    // Remove an item
-    }).on('remove', function(items) {
-        items.forEach(function(item) {
-            $('#task_' + item.id, $list).remove();
-        });
-
-    // Toggle items
-    }).on('toggle', function(item) {
-      toggle($('#task_' + item.id, $list), !!item.done);
-
-    // Add & edit
-    }).on('add', add).on('edit', edit);
+    todo.on('load', load);
+    todo.on('add remove toggle', reload);
 
     /* Private functions */
-    function toggle(task, flag) {
-        task.toggleClass('completed', flag);
-        task.find(':checkbox').prop('checked', flag);
-        element.find('#toggle-all').prop('checked', todo.isDone());
+    function load(filter) {
+        filterState = filter;
+        var items = todo.items(filterState);
+        $('#main', element).toggle(items.length > 0);
+        $list.empty() && items.forEach(add);
+    }
+
+    function reload() {
+        load(filterState);
+    }
+
+    function toggle(item) {
+      toggleTask($('#task_' + item.id, $list), !!item.done);
     }
 
     function edit(item) {
@@ -90,7 +87,13 @@ function todoPresenter(element, options) {
         $("#main", element).show();
         var task = $($.render(template, item));
         $list.append(task);
-        toggle(task, !!item.done);
+        toggleTask(task, !!item.done);
+    }
+
+    function toggleTask(task, flag) {
+        task.toggleClass('completed', flag);
+        task.find(':checkbox').prop('checked', flag);
+        element.find('#toggle-all').prop('checked', todo.isDone());
     }
 
     function getTaskElement(element) {
