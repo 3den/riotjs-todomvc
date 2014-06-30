@@ -65,7 +65,7 @@ function todoPresenter(element, options) {
     function load(filter) {
         filterState = filter;
         var items = todo.items(filterState);
-        $('#main', element).toggle(items.length > 0);
+        $('#main', element).toggle(todo.items().length > 0);
         $list.empty() && items.forEach(add);
     }
 
