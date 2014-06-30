@@ -50,11 +50,11 @@ function Todo() {
         }).map(function(id) {
             return items[id];
         });
-    }
+    };
 
     self.isDone = function(){
         return self.items('active').length == 0;
-    }
+    };
 
     // sync database
     self.on('add remove toggle edit', function() {
