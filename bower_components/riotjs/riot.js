@@ -1,7 +1,7 @@
-/* Riot 0.9.8, @license MIT, (c) 2014 Moot Inc + contributors */
-(function($) { "use strict";
+/* Riot 1.0.1, @license MIT, (c) 2014 Muut Inc + contributors */
+(function(riot) { "use strict";
 
-$.observable = function(el) {
+riot.observable = function(el) {
   var callbacks = {}, slice = [].slice;
 
   el.on = function(events, fn) {
@@ -14,11 +14,18 @@ $.observable = function(el) {
     return el;
   };
 
-  el.off = function(events) {
-    events.replace(/[^\s]+/g, function(name) {
-      callbacks[name] = [];
-    });
+  el.off = function(events, fn) {
     if (events == "*") callbacks = {};
+    else if (fn) {
+      var arr = callbacks[events];
+      for (var i = 0, cb; (cb = arr && arr[i]); ++i) {
+        if (cb === fn) arr.splice(i, 1);
+      }
+    } else {
+      events.replace(/[^\s]+/g, function(name) {
+        callbacks[name] = [];
+      });
+    }
     return el;
   };
 
@@ -32,10 +39,12 @@ $.observable = function(el) {
     var args = slice.call(arguments, 1),
       fns = callbacks[name] || [];
 
-    for (var i = 0, fn; fn = fns[i]; ++i) {
-      if (!fn.one || !fn.done) {
+    for (var i = 0, fn; (fn = fns[i]); ++i) {
+      if (!fn.busy) {
+        fn.busy = true;
         fn.apply(el, fn.typed ? [name].concat(args) : args);
-        fn.done = true;
+        if (fn.one) { fns.splice(i, 1); i--; }
+        fn.busy = false;
       }
     }
 
@@ -45,24 +54,30 @@ $.observable = function(el) {
   return el;
 
 };
-// Precompiled templates (JavaScript functions)
-var FN = {};
 
-// Render a template with data
-$.render = function(template, data) {
-  if(!template) return '';
+var FN = {}, // Precompiled templates (JavaScript functions)
+  template_escape = {"\\": "\\\\", "\n": "\\n", "\r": "\\r", "'": "\\'"},
+  render_escape = {'&': '&amp;', '"': '&quot;', '<': '&lt;', '>': '&gt;'};
 
-  FN[template] = FN[template] || new Function("_",
-    "return '" + template
-      .replace(/\n/g, "\\n")
-      .replace(/\r/g, "\\r")
-      .replace(/'/g, "\\'")
-      .replace(/\{\s*(\w+)\s*\}/g, "'+(_.$1?(_.$1+'').replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):(_.$1===0?0:''))+'") + "'"
-  );
+function default_escape_fn(str, key) {
+  return str == undefined ? '' : (str+'').replace(/[&\"<>]/g, function(char) {
+    return render_escape[char];
+  });
+}
 
-  return FN[template](data);
+riot.render = function(tmpl, data, escape_fn) {
+  if (escape_fn === true) escape_fn = default_escape_fn;
+  tmpl = tmpl || '';
+
+  return (FN[tmpl] = FN[tmpl] || new Function("_", "e", "return '" +
+    tmpl.replace(/[\\\n\r']/g, function(char) {
+      return template_escape[char];
+
+    }).replace(/{\s*([\w\.]+)\s*}/g, "' + (e?e(_.$1,'$1'):_.$1||(_.$1==undefined?'':_.$1)) + '") + "'")
+
+  )(data, escape_fn);
+
 };
-
 
 /* Cross browser popstate */
 
@@ -70,7 +85,7 @@ $.render = function(template, data) {
 if (typeof top != "object") return;
 
 var currentHash,
-  pops = $.observable({}),
+  pops = riot.observable({}),
   listen = window.addEventListener,
   doc = document;
 
@@ -80,18 +95,22 @@ function pop(hash) {
   currentHash = hash;
 }
 
+/* Always fire pop event upon page load (normalize behaviour across browsers) */
+
+// standard browsers
 if (listen) {
   listen("popstate", pop, false);
   doc.addEventListener("DOMContentLoaded", pop, false);
 
+// IE
 } else {
   doc.attachEvent("onreadystatechange", function() {
     if (doc.readyState === "complete") pop("");
   });
 }
 
-// Change the browser URL or listen to changes on the URL
-$.route = function(to) {
+/* Change the browser URL or listen to changes on the URL */
+riot.route = function(to) {
   // listen
   if (typeof to === "function") return pops.on("pop", to);
 
@@ -99,4 +118,4 @@ $.route = function(to) {
   if (history.pushState) history.pushState(0, 0, to);
   pop(to);
 
-};})(typeof top == "object" ? window.$ || (window.$ = {}) : exports);
+};})(typeof top == "object" ? window.riot = {} : exports);

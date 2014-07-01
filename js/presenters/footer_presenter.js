@@ -15,7 +15,7 @@ function footerPresenter(element, options) {
 
     function counts() {
         var data = getData();
-        element.html($.render(template, data));
+        element.html(riot.render(template, data));
         $('a[href="#/'+ filterState +'"]', element).addClass('selected');
         toggle(data);
     }

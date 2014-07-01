@@ -1,7 +1,7 @@
 'use strict';
 
 function Todo() {
-    var self = $.observable(this),
+    var self = riot.observable(this),
         db = DB('riot-todo'),
         items = db.get();
 
