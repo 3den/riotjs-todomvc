@@ -85,7 +85,7 @@ function todoPresenter(element, options) {
 
     function add(item) {
         $("#main", element).show();
-        var task = $($.render(template, item));
+        var task = $(riot.render(template, item));
         $list.append(task);
         toggleTask(task, !!item.done);
     }

@@ -46,7 +46,7 @@ describe('footerPresenter', function() {
     }
 
     function assertFooter(items, callback) {
-        var model = $.observable({
+        var model = riot.observable({
             items: function(filter) {
               return items[filter];
             }

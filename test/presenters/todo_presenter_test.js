@@ -29,7 +29,7 @@ describe('todoPresenter', function() {
     }
 
     function assertLoadItems(items) {
-        var model = $.observable({
+        var model = riot.observable({
           items: function () { return items; },
           isDone: function () { return true; }
         });
