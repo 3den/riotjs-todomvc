@@ -1,0 +1,39 @@
+{
+  "riotjs": {
+    "name": "Riot.js",
+    "description": "Riot is the most minimal approach to MV* world. It weighs 1kb and has only 3 public methods so it's extremely simple and easy to learn. A Riot application uses vanilla JavaScript to structure the code. You'll use classic design patterns instead of some framework specific idioms.",
+    "homepage": "https://muut.com/riotjs/",
+    "examples": [{
+      "name": "Architecture Example",
+      "url": ""
+  }],
+    "link_groups": [{
+      "heading": "Official Resources",
+      "links": [{
+        "name": "Introduction",
+        "url": "https://muut.com/riotjs/"
+      }, {
+        "name": "Documentation",
+        "url": "https://muut.com/riotjs/docs/"
+      }, {
+        "name": "Demo",
+        "url": "https://muut.com/riotjs/demo/"
+      }]
+    }, {
+      "heading": "Articles and Guides",
+      "links": [{
+        "name": "Riot.js — The 1kb client-side MVP library",
+        "url": "https://muut.com/blog/technology/riotjs-the-1kb-mvp-framework.html"
+      }]
+    }, {
+      "heading": "Community",
+      "links": [{
+        "name": "Forum",
+        "url": "https://muut.com/riotjs/forum/"
+      }]
+    }]
+  },
+  "templates": {
+    "todomvc": "<header> <h3><%= name %></h3> <span class=\"source-links\"> <% if (typeof examples !== 'undefined') { %> <% examples.forEach(function (example) { %> <h5><%= example.name %></h5> <% if (!location.href.match(example.url + '/')) { %> <a class=\"demo-link\" href=\"<%= example.url %>\">Demo</a>, <% } %> <a href=\"https://github.com/3den/riotjs-todomvc/<%= example.source_url ? example.source_url : example.url %>\">Source</a> <% }); %> <% } %> </span> </header> <hr> <blockquote class=\"quote speech-bubble\"> <p><%= description %></p> <footer> <a href=\"http://<%= homepage %>\"><%= name %></a> </footer> </blockquote> <% if (typeof link_groups !== 'undefined') { %> <hr> <% link_groups.forEach(function (link_group) { %> <h4><%= link_group.heading %></h4> <ul> <% link_group.links.forEach(function (link) { %> <li> <a href=\"<%= link.url %>\"><%= link.name %></a> </li> <% }); %> </ul> <% }); %> <% } %> <footer> <hr> <em>If you have other helpful links to share, or find any of the links above no longer work, please <a href=\"https://github.com/tastejs/todomvc/issues\">let us know</a>.</em> </footer>"
+  }
+}
